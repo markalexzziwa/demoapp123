@@ -1349,6 +1349,22 @@ def initialize_system():
             else:
                 st.error("❌ System initialization failed. Please check the requirements and internet connection.")
 
+def get_bird_image(species_name):
+    """Get first image for a bird species"""
+    # Assuming bird_data is your loaded PyTorch file
+    if hasattr(bird_model, 'bird_data'):
+        species_key = species_name.title()
+        if species_key in bird_model.bird_data:
+            images_b64 = bird_model.bird_data[species_key].get("images_b64", [])
+            if images_b64:
+                import base64
+                import io-
+                from PIL import Image
+                img_b64 = images_b64[0]
+                image_bytes = base64.b64decode(img_b64)
+                return Image.open(io.BytesIO(image_bytes))
+    return None
+
 def main():
     initialize_system()
     if not st.session_state.get('system_initialized', False):
