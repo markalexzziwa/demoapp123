@@ -1358,7 +1358,7 @@ def get_bird_image(species_name):
             images_b64 = bird_model.bird_data[species_key].get("images_b64", [])
             if images_b64:
                 import base64
-                import io-
+                import io
                 from PIL import Image
                 img_b64 = images_b64[0]
                 image_bytes = base64.b64decode(img_b64)
