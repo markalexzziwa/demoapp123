@@ -1348,21 +1348,6 @@ def initialize_system():
                     st.info("📖 Story video generation available with placeholder images")
             else:
                 st.error("❌ System initialization failed. Please check the requirements and internet connection.")
-def get_bird_image(species_name):
-    """Get first image for a bird species"""
-    # Assuming bird_data is your loaded PyTorch file
-    if hasattr(bird_model, 'bird_data'):
-        species_key = species_name.title()
-        if species_key in bird_model.bird_data:
-            images_b64 = bird_model.bird_data[species_key].get("images_b64", [])
-            if images_b64:
-                import base64
-                import io
-                from PIL import Image
-                img_b64 = images_b64[0]
-                image_bytes = base64.b64decode(img_b64)
-                return Image.open(io.BytesIO(image_bytes))
-    return None
 
 def main():
     initialize_system()
@@ -1389,24 +1374,32 @@ def main():
             st.markdown(f'<img src="data:image/png;base64,{base64_logo}" class="sidebar-logo" alt="Bird Spotter Logo">', unsafe_allow_html=True)
         except:
             st.markdown('<div class="sidebar-logo" style="background: #2E86AB; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">UG</div>', unsafe_allow_html=True)
-        
-        st.markdown('<div class="sidebar-title">Uganda Bird Spotter</div>', unsafe_allow_html=True)
-        
-        st.markdown("### Detectable Birds")
-        st.markdown(f"**Total Species:** {len(bird_model.bird_species)}")
-        
-        # Bird list with scroll
-        st.markdown('<div class="bird-list">', unsafe_allow_html=True)
-        for species in bird_model.bird_species:
-            try:
-                bird_img = get_bird_image(species)  # Assuming you have this function
-                if bird_img:
-                    st.image(bird_img, width=100)
-            except:
-                pass
-            st.markdown(f"• {species}")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
+    
+            st.markdown('<div class="sidebar-title">Uganda Bird Spotter</div>', unsafe_allow_html=True)
+    
+            st.markdown("### Detectable Birds")
+            st.markdown(f"**Total Species:** {len(bird_model.bird_species)}")
+    
+    # Bird list with scroll - NOW WITH IMAGES ABOVE NAMES
+            st.markdown('<div class="bird-list">', unsafe_allow_html=True)
+    
+            for species in bird_model.bird_species:
+        # Get image for this species
+                try:
+                    bird_images = get_bird_images(species, max_images=1)
+                    if bird_images and len(bird_images) > 0:
+                # Display IMAGE ABOVE NAME
+                        st.image(bird_images[0], width=100)
+                        st.markdown(f"**{species}**")
+                    else:
+                # Fallback without image
+                        st.markdown(f"• {species}")
+                except:
+            # If image loading fails, just show name
+                    st.markdown(f"• {species}")
+    
+            st.markdown('</div>', unsafe_allow_html=True)
+
         
         # Video model status
         st.markdown("---")
